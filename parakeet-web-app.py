@@ -479,13 +479,6 @@ async def websocket_endpoint(websocket: WebSocket):
 if __name__ == "__main__":
     current_os = platform.system()
 
-    if current_os == "Linux":
-        subprocess.run(["pactl", "unload-module", "module-loopback"], capture_output=True)
-        subprocess.run(["pactl", "unload-module", "module-null-sink"], capture_output=True)
-        subprocess.run(["pactl", "load-module", "module-null-sink", "sink_name=Mix-IOAudio", "sink_properties=device.description=Mix-IOAudio"], capture_output=True)
-        subprocess.run(["pactl", "load-module", "module-loopback", "source=@DEFAULT_SINK@.monitor", "sink=Mix-IOAudio"], capture_output=True)
-        time.sleep(1)
-
     recognizer = load_parakeet()
     mic_device, sys_device = select_audio_devices()
     print(f"🎙️ Micro ID : {mic_device} | Système ID : {sys_device}")
