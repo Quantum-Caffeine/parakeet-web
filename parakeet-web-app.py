@@ -152,15 +152,24 @@ class TenVadDetector:
 def select_audio_devices():
     devices = sd.query_devices()
     mic_idx = sd.default.device[0]
-    sys_idx = 25
-
+    sys_idx = None
+    
     current_os = platform.system()
     if current_os == "Linux":
+        # On cherche le "Monitor" natif de la carte son principale
         for i, dev in enumerate(devices):
             name = dev['name'].lower()
-            if "mix-ioaudio.monitor" in name and dev['max_input_channels'] > 0:
+            if "monitor" in name and dev['max_input_channels'] > 0:
                 sys_idx = i
-                break
+                # Si on trouve un moniteur lié à une sortie (output/analog), c'est notre candidat idéal
+                if "output" in name or "analog-stereo" in name:
+                    break
+                    
+        # Fallback si aucun moniteur n'est trouvé
+        if sys_idx is None:
+            sys_idx = mic_idx
+            print("⚠️ Avertissement Linux : Aucun 'Monitor' trouvé. L'audio système risque de ne pas être capturé.")
+
     elif current_os == "Windows":
         for i, dev in enumerate(devices):
             name = dev['name'].lower()
@@ -171,7 +180,6 @@ def select_audio_devices():
             sys_idx = mic_idx
 
     return mic_idx, sys_idx
-
 def load_parakeet():
     print("🧠 Chargement du modèle Parakeet (sherpa-onnx)...")
     if not MODEL_DIR.exists():
