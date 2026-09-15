@@ -1,5 +1,8 @@
 sounddevice==0.4.6
-numpy==1.26.4
+numpy
+tqdm
+requests
+ten_vad
 sherpa-onnx==1.13.6
 fastapi==0.111.0
 uvicorn==0.30.1
